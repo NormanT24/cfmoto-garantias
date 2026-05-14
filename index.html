@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFMOTO — Garantías Centro de Servicio</title>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0F1A;
+    --surface: #131929;
+    --surface2: #1C2438;
+    --border: #263047;
+    --text: #EDF0F7;
+    --text2: #8A93A8;
+    --text3: #4E5870;
+    --accent: #0055A5;
+    --accent-hover: #0066C8;
+    --accent-fg: #FFFFFF;
+    --teal: #10B981;
+    --teal-bg: #052E1C;
+    --amber: #F59E0B;
+    --amber-bg: #2D1F05;
+    --blue: #60A5FA;
+    --blue-bg: #0C1F3A;
+    --red: #F87171;
+    --red-bg: #2D0A0A;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ── LOGIN ── */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; background: var(--bg);
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 36px;
+    width: 100%; max-width: 380px;
+    text-align: center;
+  }
+  .login-icon {
+    width: 56px; height: 56px;
+    background: var(--accent); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 26px;
+  }
+  .cfmoto-wordmark { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 2px; }
+  .login-card h1 { font-size: 15px; font-weight: 400; color: var(--text2); margin-bottom: 6px; }
+  .login-card p { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+  .google-btn {
+    width: 100%; background: #fff; color: #3c4043;
+    border: 1px solid #dadce0; border-radius: var(--radius);
+    padding: 12px 20px; font-size: 14px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  }
+  .google-btn:hover { background: #f8f9fa; }
+  .login-note { font-size: 11px; color: var(--text3); margin-top: 16px; }
+  .login-error {
+    background: var(--red-bg); border: 1px solid var(--red);
+    border-radius: var(--radius); padding: 10px 14px;
+    font-size: 13px; color: var(--red);
+    margin-top: 14px; display: none;
+  }
+
+  /* ── SHELL ── */
+  .shell { display: none; flex-direction: column; min-height: 100vh; }
+  .shell.active { display: flex; }
+
+  .topbar {
+    background: #0055A5; color: #fff;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-logo { font-size: 18px; letter-spacing: 0.05em; font-weight: 700; }
+  .topbar h2 { font-size: 14px; font-weight: 500; flex: 1; }
+  .topbar-user { font-size: 12px; color: rgba(255,255,255,0.6); text-align: right; }
+  .topbar-user span { color: rgba(255,255,255,0.9); display: block; font-size: 13px; }
+  .topbar-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; flex-shrink: 0;
+  }
+
+  .main { flex: 1; padding: 20px 16px; max-width: 520px; margin: 0 auto; width: 100%; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .screen-title { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .screen-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+
+  /* ── ROLE CARDS ── */
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .role-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px 14px;
+    text-align: center; cursor: pointer; transition: all 0.15s;
+  }
+  .role-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .role-card .role-icon { font-size: 28px; margin-bottom: 10px; }
+  .role-card .role-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .role-card .role-desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* ── FIELDS ── */
+  .field-group { margin-bottom: 14px; }
+  .field-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+  .field-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 11px 14px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .field-select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 11px 14px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none; appearance: none; cursor: pointer;
+  }
+  .field-textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 11px 14px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none; resize: vertical; min-height: 80px;
+    transition: border-color 0.15s;
+  }
+  .field-textarea:focus { border-color: var(--accent); }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    border-radius: var(--radius); padding: 13px 20px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-ghost {
+    width: 100%; background: transparent; color: var(--text2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 11px 20px; font-size: 14px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; margin-top: 8px; transition: background 0.15s;
+  }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  /* ── CASE CARD ── */
+  .case-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px;
+  }
+  .case-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .case-ot { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; }
+  .case-date { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+  .badge-pending { background: var(--amber-bg); color: var(--amber); }
+  .badge-tecnico { background: var(--blue-bg); color: var(--blue); }
+  .badge-done { background: var(--teal-bg); color: var(--teal); }
+
+  .case-progress { display: flex; gap: 4px; margin-bottom: 12px; }
+  .progress-step { flex: 1; height: 4px; border-radius: 2px; background: var(--surface2); }
+  .progress-step.done { background: var(--teal); }
+
+  .case-steps { display: flex; flex-direction: column; gap: 6px; }
+  .step-row { display: flex; align-items: center; gap: 8px; }
+  .step-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0;
+  }
+  .step-dot.done { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .step-label { font-size: 12px; color: var(--text2); }
+  .step-label.done { color: var(--teal); }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider { display: flex; align-items: center; gap: 10px; margin: 20px 0 14px; }
+  .section-divider .sdlabel { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .section-divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+
+  /* ── PHOTO GRID ── */
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 4px; }
+  .photo-slot {
+    aspect-ratio: 1; background: var(--surface);
+    border: 1.5px dashed var(--border); border-radius: var(--radius);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.15s;
+  }
+  .photo-slot:hover { border-color: var(--accent); }
+  .photo-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .photo-slot .ps-icon { font-size: 20px; color: var(--text3); }
+  .photo-slot .ps-label { font-size: 9px; color: var(--text3); text-align: center; line-height: 1.3; padding: 0 4px; }
+  .photo-slot.uploaded { border-style: solid; border-color: var(--teal); background: var(--teal-bg); }
+  .photo-slot.uploaded .ps-icon { color: var(--teal); }
+  .photo-slot.uploaded .ps-label { color: var(--teal); font-weight: 500; }
+  .photo-slot img.preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); }
+  .photo-delete-btn {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(220,50,50,0.85); color: #fff;
+    border: none; font-size: 11px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    z-index: 10; line-height: 1;
+  }
+  .photo-delete-btn:hover { background: rgba(200,30,30,1); }
+
+  /* ── VIDEO SLOT ── */
+  .video-slot {
+    background: var(--surface); border: 1.5px dashed var(--border);
+    border-radius: var(--radius); padding: 14px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.15s;
+  }
+  .video-slot:hover { border-color: var(--accent); }
+  .video-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .video-slot .vs-icon { font-size: 22px; color: var(--text3); }
+  .video-slot .vs-text .vs-title { font-size: 13px; color: var(--text2); }
+  .video-slot .vs-text .vs-sub { font-size: 11px; color: var(--text3); }
+  .video-slot.uploaded { border-style: solid; border-color: var(--teal); background: var(--teal-bg); }
+  .video-slot.uploaded .vs-icon { color: var(--teal); }
+  .video-slot.uploaded .vs-title { color: var(--teal); }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: var(--blue-bg); border: 1px solid #1a3a5c;
+    border-radius: var(--radius); padding: 12px 14px;
+    font-size: 12px; color: var(--blue); margin-bottom: 16px;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+
+  /* ── SUCCESS ── */
+  .success-screen { text-align: center; padding: 40px 20px; }
+  .success-icon { font-size: 48px; margin-bottom: 16px; }
+  .success-screen h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .success-screen p { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+
+  /* ── SPINNER ── */
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-saving {
+    background: var(--teal) !important;
+    pointer-events: none;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    padding: 10px 20px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show { opacity: 1; }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text2);
+    background: none; border: none; cursor: pointer;
+    padding: 0; margin-bottom: 20px; font-family: 'DM Sans', sans-serif;
+  }
+  .back-btn:hover { color: var(--text); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .optional-tag { font-size: 10px; color: var(--text3); font-weight: 400; margin-left: 4px; }
+  .mt16 { margin-top: 16px; }
+  .cases-empty { text-align: center; padding: 32px 16px; color: var(--text3); font-size: 13px; }
+
+  .tab-bar { display: flex; gap: 4px; background: var(--surface2); border-radius: var(--radius); padding: 4px; margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; border: none; background: none; border-radius: 8px; cursor: pointer; color: var(--text2); transition: all 0.15s; }
+  .tab-btn.active { background: var(--surface); color: var(--text); font-weight: 500; }
+
+  .logout-btn { font-size: 12px; color: rgba(255,255,255,0.5); background: none; border: none; cursor: pointer; padding: 0; font-family: 'DM Sans', sans-serif; }
+  .logout-btn:hover { color: #fff; }
+
+  @media (max-width: 400px) {
+    .two-col { grid-template-columns: 1fr; }
+    .role-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-icon">🏍️</div>
+    <div class="cfmoto-wordmark">CFMOTO</div>
+    <h1>Garantías — Centro de Servicio</h1>
+    <p>Inicia sesión con tu cuenta Google para continuar</p>
+
+    <!-- Botón real de Google Identity Services -->
+    <div id="g_id_onload"
+      data-client_id="693257088184-c2vlo7k113k3hhg796uq1nflj5bemk5j.apps.googleusercontent.com"
+      data-callback="handleGoogleLogin"
+      data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+      data-width="308">
+    </div>
+
+    <div class="login-error" id="loginError">
+      ⛔ Tu correo no está autorizado para acceder a esta aplicación.
+    </div>
+    <p class="login-note">Solo correos autorizados por CFMOTO tienen acceso</p>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ═══ -->
+<div class="shell" id="appShell">
+  <div class="topbar">
+    <span class="topbar-logo">CFMOTO</span>
+    <h2 id="topbarTitle">Garantías</h2>
+    <div class="topbar-user">
+      <span id="topbarName"></span>
+      <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+    <div class="topbar-avatar" id="topbarAvatar">?</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ── INICIO / SELECTOR DE ROL ── -->
+    <div class="screen active" id="screenRole">
+      <p class="screen-title" id="greetingTitle">Buenos días</p>
+      <p class="screen-sub">¿Qué vas a registrar hoy?</p>
+      <div class="role-grid">
+        <div class="role-card" onclick="goTo('screenAsesorMenu')">
+          <div class="role-icon">📋</div>
+          <div class="role-name">Asesor de servicio</div>
+          <div class="role-desc">Abrir caso o cerrar repuestos</div>
+        </div>
+        <div class="role-card" onclick="goTo('screenTecnico')">
+          <div class="role-icon">🔧</div>
+          <div class="role-name">Técnico</div>
+          <div class="role-desc">Diagnóstico y evidencias</div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span class="sdlabel">Casos del día</span><hr></div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="filterCases('all', this)">Todos</button>
+        <button class="tab-btn" onclick="filterCases('pending', this)">Pendientes</button>
+        <button class="tab-btn" onclick="filterCases('done', this)">Completos</button>
+      </div>
+      <div id="casesList"></div>
+    </div>
+
+    <!-- ── MENÚ ASESOR ── -->
+    <div class="screen" id="screenAsesorMenu">
+      <button class="back-btn" onclick="goTo('screenRole')">← Volver</button>
+      <p class="screen-title">Asesor de servicio</p>
+      <p class="screen-sub">¿Qué necesitas hacer?</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="role-card" style="text-align:left; display:flex; align-items:center; gap:14px;" onclick="goTo('screenAsesorAbrir')">
+          <div style="font-size:24px;">📥</div>
+          <div>
+            <div class="role-name">Abrir nuevo caso</div>
+            <div class="role-desc">Ingreso de moto al taller</div>
+          </div>
+        </div>
+        <div class="role-card" style="text-align:left; display:flex; align-items:center; gap:14px;" onclick="goTo('screenAsesorCerrar')">
+          <div style="font-size:24px;">🔖</div>
+          <div>
+            <div class="role-name">Cerrar caso — repuestos</div>
+            <div class="role-desc">Agregar códigos y referencias finales</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ASESOR: ABRIR CASO ── -->
+    <div class="screen" id="screenAsesorAbrir">
+      <button class="back-btn" onclick="goTo('screenAsesorMenu')">← Volver</button>
+      <p class="screen-title">Apertura de caso</p>
+      <p class="screen-sub">Datos de ingreso de la motocicleta</p>
+
+      <div class="field-group">
+        <label class="field-label">Nombre del asesor *</label>
+        <input class="field-input" id="aa_asesor" type="text" placeholder="Tu nombre completo">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Sede *</label>
+        <select class="field-select" id="aa_sede">
+          <option value="">Seleccionar sede...</option>
+          <option>Calle 127</option>
+          <option>Centro</option>
+          <option>Norte</option>
+          <option>Sur</option>
+        </select>
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="field-label">N° Orden de trabajo *</label>
+          <input class="field-input" id="aa_ot" type="text" placeholder="OT-00123">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Placa *</label>
+          <input class="field-input" id="aa_placa" type="text" placeholder="ABC123">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Fecha de ingreso *</label>
+        <input class="field-input" id="aa_fecha" type="date">
+      </div>
+
+      <div class="section-divider"><span class="sdlabel">Fotos del vehículo</span><hr></div>
+      <div class="info-box">ℹ️ Las fotos las puede tomar el asesor o el técnico. Si no las tienes ahora, el técnico las agrega.</div>
+      <div class="photo-grid" id="photoGridAsesor"></div>
+
+      <div class="mt16">
+        <button class="btn-primary" id="btnAbrirCaso" onclick="submitAsesorAbrir()">
+          <span>Abrir caso y guardar</span>
+          <div class="spinner" id="spinnerAsesorAbrir"></div>
+        </button>
+        <button class="btn-ghost" onclick="goTo('screenAsesorMenu')">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- ── TÉCNICO: DIAGNÓSTICO ── -->
+    <div class="screen" id="screenTecnico">
+      <button class="back-btn" onclick="goTo('screenRole')">← Volver</button>
+      <p class="screen-title">Diagnóstico técnico</p>
+      <p class="screen-sub">Busca el caso por número de OT</p>
+
+      <div class="field-group">
+        <label class="field-label">N° Orden de trabajo *</label>
+        <div style="display:flex; gap:8px;">
+          <input class="field-input" id="tec_ot_buscar" type="text" placeholder="OT-00123" style="flex:1">
+          <button class="btn-primary" style="width:auto; padding:11px 16px; flex-shrink:0;" onclick="buscarOT()">Buscar</button>
+        </div>
+      </div>
+
+      <div id="tec_not_found" style="display:none;" class="info-box">⚠️ No se encontró ningún caso con esa OT. Verifica o pide al asesor que lo abra primero.</div>
+
+      <div id="tec_form" style="display:none;">
+        <div class="case-card" id="tec_case_summary"></div>
+
+        <div class="field-group">
+          <label class="field-label">Nombre del técnico *</label>
+          <input class="field-input" id="tec_nombre" type="text" placeholder="Tu nombre completo">
+        </div>
+        <div class="two-col">
+          <div class="field-group">
+            <label class="field-label">VIN *</label>
+            <input class="field-input" id="tec_vin" type="text" placeholder="17 caracteres" maxlength="17">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Km / Horas *</label>
+            <input class="field-input" id="tec_km" type="number" placeholder="0">
+          </div>
+        </div>
+
+        <div class="section-divider"><span class="sdlabel">Diagnóstico</span><hr></div>
+        <div class="field-group">
+          <label class="field-label">Falla reportada *</label>
+          <textarea class="field-textarea" id="tec_falla" placeholder="Descripción de la falla según el cliente..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Diagnóstico técnico *</label>
+          <textarea class="field-textarea" id="tec_diagnostico" placeholder="Causa encontrada por el técnico..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Solución aplicada *</label>
+          <textarea class="field-textarea" id="tec_solucion" placeholder="Procedimiento realizado..."></textarea>
+        </div>
+
+        <div class="section-divider"><span class="sdlabel">Fotos del vehículo</span><hr></div>
+        <div class="info-box">📸 Si el asesor no tomó las fotos de ingreso, agrégalas aquí.</div>
+        <div class="photo-grid" id="photoGridTecVehiculo"></div>
+
+        <div class="section-divider"><span class="sdlabel">Evidencia diagnóstico</span><hr></div>
+        <div class="photo-grid" id="photoGridTecEvidencia"></div>
+
+        <div class="section-divider"><span class="sdlabel">Video <span class="optional-tag">(opcional)</span></span><hr></div>
+        <div class="video-slot" id="videoSlot" onclick="document.getElementById('videoInput').click()">
+          <input type="file" id="videoInput" accept="video/*" style="display:none" onchange="handleVideo(this)">
+          <div class="vs-icon">🎬</div>
+          <div class="vs-text">
+            <div class="vs-title">Adjuntar video de falla</div>
+            <div class="vs-sub">Ruidos, vibraciones, falla en movimiento</div>
+          </div>
+        </div>
+
+        <div class="mt16">
+          <button class="btn-primary" id="btnTecnico" onclick="submitTecnico()">
+            <span>Guardar diagnóstico</span>
+            <div class="spinner" id="spinnerTecnico"></div>
+          </button>
+          <button class="btn-ghost" onclick="goTo('screenRole')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ASESOR: CIERRE ── -->
+    <div class="screen" id="screenAsesorCerrar">
+      <button class="back-btn" onclick="goTo('screenAsesorMenu')">← Volver</button>
+      <p class="screen-title">Cierre de caso</p>
+      <p class="screen-sub">Busca el caso para agregar repuestos y mano de obra</p>
+
+      <div class="field-group">
+        <label class="field-label">N° Orden de trabajo *</label>
+        <div style="display:flex; gap:8px;">
+          <input class="field-input" id="cierre_ot_buscar" type="text" placeholder="OT-00123" style="flex:1">
+          <button class="btn-primary" style="width:auto; padding:11px 16px; flex-shrink:0;" onclick="buscarOTCierre()">Buscar</button>
+        </div>
+      </div>
+      <div id="cierre_not_found" style="display:none;" class="info-box">⚠️ No se encontró el caso.</div>
+      <div id="cierre_form" style="display:none;">
+        <div class="case-card" id="cierre_case_summary"></div>
+        <div class="field-group">
+          <label class="field-label">Código de mano de obra *</label>
+          <input class="field-input" id="cierre_mdo" type="text" placeholder="Ej: MOB-001">
+        </div>
+        <div class="two-col">
+          <div class="field-group">
+            <label class="field-label">Tiempo (horas) *</label>
+            <input class="field-input" id="cierre_tiempo" type="number" placeholder="0.5" step="0.5">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Referencia repuesto *</label>
+            <input class="field-input" id="cierre_ref" type="text" placeholder="REF-XYZ">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Observaciones <span class="optional-tag">(opcional)</span></label>
+          <textarea class="field-textarea" id="cierre_obs" placeholder="Notas para el equipo de análisis..."></textarea>
+        </div>
+        <div class="section-divider"><span class="sdlabel">Fotos orden de trabajo</span><hr></div>
+        <div class="photo-grid" id="photoGridCierre"></div>
+        <div class="mt16">
+          <button class="btn-primary" id="btnCierre" onclick="submitCierre()">
+            <span>Cerrar caso</span>
+            <div class="spinner" id="spinnerCierre"></div>
+          </button>
+          <button class="btn-ghost" onclick="goTo('screenAsesorMenu')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ÉXITO ── -->
+    <div class="screen" id="screenSuccess">
+      <div class="success-screen">
+        <div class="success-icon">✅</div>
+        <h2 id="successTitle">¡Registrado!</h2>
+        <p id="successMsg">La información fue guardada correctamente.</p>
+        <button class="btn-primary" onclick="goTo('screenRole')" style="max-width:280px; margin:0 auto;">Volver al inicio</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIGURACIÓN — ajusta estos valores
+// ═══════════════════════════════════════════
+const GOOGLE_CLIENT_ID = '693257088184-c2vlo7k113k3hhg796uq1nflj5bemk5j.apps.googleusercontent.com';
+
+// URL del Google Apps Script (lo configuramos en el siguiente paso)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzrRaASa50ZWIknL2lqmckC6wwGuU_2e-Lw0Q8AeApZQfeZCRRKcAzbIjeYzmJ3Gwvqw/exec';
+
+// Correos autorizados — agrega aquí los de tus técnicos y asesores
+const CORREOS_AUTORIZADOS = [
+  'serviciomotoautoyamaha@gmail.com',
+  // Agrega más correos aquí:
+  // 'tecnico1@gmail.com',
+  // 'asesor1@gmail.com',
+];
+
+// ═══════════════════════════════════════════
+// CONSTANTES
+// ═══════════════════════════════════════════
+const FOTO_VEHICULO  = ['Lado derecho','Lado izquierdo','VIN','Odómetro','Al frente','Trasero'];
+const FOTO_EVIDENCIA = ['Falla','Diagnóstico','Solución','Repuesto nuevo','Repuesto defectuoso','Mediciones / QR'];
+const FOTO_CIERRE    = ['OT frente','OT dorso','Repuesto nuevo','Repuesto defectuoso'];
+
+// ═══════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════
+let currentUser = null;
+let cases = JSON.parse(localStorage.getItem('cfmoto_cases') || '[]');
+
+function saveCases() {
+  localStorage.setItem('cfmoto_cases', JSON.stringify(cases));
+}
+
+// ═══════════════════════════════════════════
+// GOOGLE LOGIN
+// ═══════════════════════════════════════════
+function handleGoogleLogin(response) {
+  // Decodifica el JWT que devuelve Google
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  const email = payload.email;
+  const name  = payload.name;
+
+  // Verifica si el correo está en la lista de autorizados
+  const autorizado = CORREOS_AUTORIZADOS.some(c => c.toLowerCase() === email.toLowerCase());
+
+  if (!autorizado) {
+    document.getElementById('loginError').style.display = 'block';
+    return;
+  }
+
+  // Login exitoso
+  currentUser = { email, name };
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appShell').classList.add('active');
+
+  // Saludo según hora
+  const hora = new Date().getHours();
+  const saludo = hora < 12 ? 'Buenos días' : hora < 18 ? 'Buenas tardes' : 'Buenas noches';
+  const firstName = name.split(' ')[0];
+  document.getElementById('greetingTitle').textContent = `${saludo}, ${firstName}`;
+  document.getElementById('topbarName').textContent = firstName;
+  document.getElementById('topbarAvatar').textContent = firstName[0].toUpperCase();
+
+  renderCases();
+  buildPhotoGrid('photoGridAsesor', FOTO_VEHICULO);
+  document.getElementById('aa_fecha').value = new Date().toISOString().split('T')[0];
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('appShell').classList.remove('active');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('loginError').style.display = 'none';
+  goTo('screenRole');
+}
+
+// ═══════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const titles = {
+    screenRole: 'Garantías',
+    screenAsesorMenu: 'Asesor',
+    screenAsesorAbrir: 'Apertura de caso',
+    screenAsesorCerrar: 'Cierre de caso',
+    screenTecnico: 'Diagnóstico',
+    screenSuccess: 'Listo'
+  };
+  document.getElementById('topbarTitle').textContent = titles[id] || 'CFMOTO';
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════
+// FOTOS
+// ═══════════════════════════════════════════
+function buildPhotoGrid(containerId, labels) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  labels.forEach((label, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'photo-slot';
+    slot.id = `${containerId}_slot_${i}`;
+    slot.innerHTML = `
+      <input type="file" accept="image/*" onchange="handlePhoto(this,'${containerId}',${i})">
+      <div class="ps-icon">📷</div>
+      <div class="ps-label">${label}</div>`;
+    grid.appendChild(slot);
+  });
+}
+
+function comprimirFoto(file, callback) {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const MAX = 800;
+    let w = img.width, h = img.height;
+    if (w > MAX) { h = h * MAX / w; w = MAX; }
+    if (h > MAX) { w = w * MAX / h; h = MAX; }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    callback(canvas.toDataURL('image/jpeg', 0.7));
+  };
+  img.src = url;
+}
+
+function handlePhoto(input, gridId, idx) {
+  if (!input.files[0]) return;
+  const slot = document.getElementById(`${gridId}_slot_${idx}`);
+  slot.innerHTML = `<div class="ps-icon">⏳</div><div class="ps-label">Procesando...</div>`;
+  comprimirFoto(input.files[0], (dataUrl) => {
+    slot.classList.add('uploaded');
+    slot.innerHTML = `
+      <img class="preview" src="${dataUrl}">
+      <button class="photo-delete-btn" onclick="borrarFoto('${gridId}',${idx})" title="Eliminar foto">✕</button>`;
+  });
+}
+
+function borrarFoto(gridId, idx) {
+  const labels = fotoLabels[gridId];
+  if (!labels) return;
+  const slot = document.getElementById(`${gridId}_slot_${idx}`);
+  slot.classList.remove('uploaded');
+  slot.innerHTML = `
+    <input type="file" accept="image/*" onchange="handlePhoto(this,'${gridId}',${idx})">
+    <div class="ps-icon">📷</div>
+    <div class="ps-label">${labels[idx]}</div>`;
+}
+
+function handleVideo(input) {
+  if (!input.files[0]) return;
+  const slot = document.getElementById('videoSlot');
+  slot.classList.add('uploaded');
+  slot.querySelector('.vs-title').textContent = '✓ ' + input.files[0].name;
+}
+
+// Recopila fotos de una grilla como array de base64
+function getPhotosFromGrid(containerId, labels) {
+  return labels.map((label, i) => {
+    const img = document.querySelector(`#${containerId}_slot_${i} img.preview`);
+    return img ? { label, data: img.src } : { label, data: '' };
+  });
+}
+
+// ═══════════════════════════════════════════
+// ENVÍO A GOOGLE SHEETS (Apps Script)
+// ═══════════════════════════════════════════
+function enviarASheets(data) {
+  // Fire-and-forget: guarda localmente y envía a Sheets en segundo plano
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(e => console.warn('Sheets sync (no crítico):', e));
+}
+
+function setLoading(btnId, spinnerId, loading) {
+  const btn = document.getElementById(btnId);
+  const spinner = document.getElementById(spinnerId);
+  btn.disabled = loading;
+  spinner.style.display = loading ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════
+// ASESOR — ABRIR CASO
+// ═══════════════════════════════════════════
+function submitAsesorAbrir() {
+  const asesor = document.getElementById('aa_asesor').value.trim();
+  const sede   = document.getElementById('aa_sede').value;
+  const ot     = document.getElementById('aa_ot').value.trim().toUpperCase();
+  const placa  = document.getElementById('aa_placa').value.trim().toUpperCase();
+  const fecha  = document.getElementById('aa_fecha').value;
+
+  if (!asesor || !sede || !ot || !placa || !fecha) {
+    showToast('⚠️ Completa todos los campos obligatorios'); return;
+  }
+  if (cases.find(c => c.ot === ot)) {
+    showToast('⚠️ Ya existe un caso con esa OT'); return;
+  }
+
+  const btnAbrir = document.getElementById('btnAbrirCaso');
+  btnAbrir.disabled = true;
+  btnAbrir.querySelector('span').textContent = '✓ Guardando...';
+  btnAbrir.style.background = 'var(--teal)';
+
+  const fotos = getPhotosFromGrid('photoGridAsesor', FOTO_VEHICULO);
+  const newCase = {
+    ot, sede, placa, fecha,
+    asesor_apertura: asesor,
+    correo_asesor: currentUser.email,
+    estado: 'abierto',
+    creado: new Date().toISOString(),
+    fotos_vehiculo: fotos,
+    tecnico: null,
+    cierre: null
+  };
+
+  enviarASheets({ tipo: 'apertura', ...newCase }); // fire-and-forget
+
+  cases.unshift(newCase);
+  saveCases();
+  // Reset
+  ['aa_asesor','aa_ot','aa_placa'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('aa_sede').value = '';
+  document.getElementById('aa_fecha').value = new Date().toISOString().split('T')[0];
+  buildPhotoGrid('photoGridAsesor', FOTO_VEHICULO);
+
+  document.getElementById('successTitle').textContent = '¡Caso abierto!';
+  document.getElementById('successMsg').textContent = `OT ${ot} registrada. El técnico ya puede buscarla y agregar el diagnóstico.`;
+  goTo('screenSuccess');
+  renderCases();
+}
+
+// ═══════════════════════════════════════════
+// TÉCNICO — BUSCAR OT
+// ═══════════════════════════════════════════
+function buscarOT() {
+  const ot = document.getElementById('tec_ot_buscar').value.trim().toUpperCase();
+  const found = cases.find(c => c.ot === ot);
+  document.getElementById('tec_not_found').style.display = found ? 'none' : 'block';
+  document.getElementById('tec_form').style.display = found ? 'block' : 'none';
+  if (found) {
+    document.getElementById('tec_case_summary').innerHTML = renderCaseSummary(found);
+    buildPhotoGrid('photoGridTecVehiculo', FOTO_VEHICULO);
+    buildPhotoGrid('photoGridTecEvidencia', FOTO_EVIDENCIA);
+  }
+}
+
+// ═══════════════════════════════════════════
+// TÉCNICO — GUARDAR DIAGNÓSTICO
+// ═══════════════════════════════════════════
+function submitTecnico() {
+  const ot         = document.getElementById('tec_ot_buscar').value.trim().toUpperCase();
+  const nombre     = document.getElementById('tec_nombre').value.trim();
+  const vin        = document.getElementById('tec_vin').value.trim();
+  const km         = document.getElementById('tec_km').value.trim();
+  const falla      = document.getElementById('tec_falla').value.trim();
+  const diagnostico= document.getElementById('tec_diagnostico').value.trim();
+  const solucion   = document.getElementById('tec_solucion').value.trim();
+
+  if (!nombre || !vin || !km || !falla || !diagnostico || !solucion) {
+    showToast('⚠️ Completa todos los campos obligatorios'); return;
+  }
+
+  const btnTec = document.getElementById('btnTecnico');
+  btnTec.disabled = true;
+  btnTec.querySelector('span').textContent = '✓ Guardando...';
+  btnTec.style.background = 'var(--teal)';
+
+  const fotosVehiculo  = getPhotosFromGrid('photoGridTecVehiculo', FOTO_VEHICULO);
+  const fotosEvidencia = getPhotosFromGrid('photoGridTecEvidencia', FOTO_EVIDENCIA);
+
+  const tecData = { nombre, correo: currentUser.email, vin, km, falla, diagnostico, solucion, fecha: new Date().toISOString(), fotosVehiculo, fotosEvidencia };
+
+  enviarASheets({ tipo: 'diagnostico', ot, ...tecData }); // fire-and-forget
+
+  const idx = cases.findIndex(c => c.ot === ot);
+  if (idx !== -1) {
+    cases[idx].tecnico = tecData;
+    cases[idx].estado = 'diagnostico';
+    saveCases();
+  }
+
+  ['tec_nombre','tec_vin','tec_km','tec_falla','tec_diagnostico','tec_solucion'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('tec_ot_buscar').value = '';
+  document.getElementById('tec_form').style.display = 'none';
+
+  document.getElementById('successTitle').textContent = '¡Diagnóstico guardado!';
+  document.getElementById('successMsg').textContent = `OT ${ot} actualizada. El asesor puede cerrar el caso con repuestos.`;
+  goTo('screenSuccess');
+  renderCases();
+}
+
+// ═══════════════════════════════════════════
+// ASESOR — BUSCAR OT PARA CIERRE
+// ═══════════════════════════════════════════
+function buscarOTCierre() {
+  const ot = document.getElementById('cierre_ot_buscar').value.trim().toUpperCase();
+  const found = cases.find(c => c.ot === ot);
+  document.getElementById('cierre_not_found').style.display = found ? 'none' : 'block';
+  document.getElementById('cierre_form').style.display = found ? 'block' : 'none';
+  if (found) {
+    document.getElementById('cierre_case_summary').innerHTML = renderCaseSummary(found);
+    buildPhotoGrid('photoGridCierre', FOTO_CIERRE);
+  }
+}
+
+// ═══════════════════════════════════════════
+// ASESOR — CERRAR CASO
+// ═══════════════════════════════════════════
+function submitCierre() {
+  const ot     = document.getElementById('cierre_ot_buscar').value.trim().toUpperCase();
+  const mdo    = document.getElementById('cierre_mdo').value.trim();
+  const tiempo = document.getElementById('cierre_tiempo').value.trim();
+  const ref    = document.getElementById('cierre_ref').value.trim();
+  const obs    = document.getElementById('cierre_obs').value.trim();
+
+  if (!mdo || !tiempo || !ref) { showToast('⚠️ Completa los campos obligatorios'); return; }
+
+  const btnCierreEl = document.getElementById('btnCierre');
+  btnCierreEl.disabled = true;
+  btnCierreEl.querySelector('span').textContent = '✓ Guardando...';
+  btnCierreEl.style.background = 'var(--teal)';
+
+  const fotos = getPhotosFromGrid('photoGridCierre', FOTO_CIERRE);
+  const cierreData = { mdo, tiempo, ref, obs, correo: currentUser.email, fecha: new Date().toISOString(), fotos };
+
+  enviarASheets({ tipo: 'cierre', ot, ...cierreData }); // fire-and-forget
+
+  const idx = cases.findIndex(c => c.ot === ot);
+  if (idx !== -1) {
+    cases[idx].cierre = cierreData;
+    cases[idx].estado = 'cerrado';
+    saveCases();
+  }
+
+  ['cierre_mdo','cierre_tiempo','cierre_ref','cierre_obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cierre_ot_buscar').value = '';
+  document.getElementById('cierre_form').style.display = 'none';
+
+  document.getElementById('successTitle').textContent = '¡Caso cerrado!';
+  document.getElementById('successMsg').textContent = `OT ${ot} completada. Lista para cargar al sistema formal.`;
+  goTo('screenSuccess');
+  renderCases();
+}
+
+// ═══════════════════════════════════════════
+// LISTA DE CASOS
+// ═══════════════════════════════════════════
+function renderCaseSummary(c) {
+  const badge = c.estado === 'cerrado'
+    ? `<span class="badge badge-done">✓ Completo</span>`
+    : c.estado === 'diagnostico'
+    ? `<span class="badge badge-tecnico">⚙ En diagnóstico</span>`
+    : `<span class="badge badge-pending">◎ Abierto</span>`;
+
+  const steps = [
+    { label: 'Apertura de caso',     done: true },
+    { label: 'Diagnóstico técnico',  done: c.estado === 'diagnostico' || c.estado === 'cerrado' },
+    { label: 'Cierre — repuestos',   done: c.estado === 'cerrado' }
+  ];
+
+  return `
+    <div class="case-header">
+      <div>
+        <div class="case-ot">${c.ot}</div>
+        <div class="case-date">Placa: ${c.placa} · ${c.sede} · ${c.fecha}</div>
+      </div>
+      ${badge}
+    </div>
+    <div class="case-progress">
+      ${steps.map(s => `<div class="progress-step ${s.done ? 'done' : ''}"></div>`).join('')}
+    </div>
+    <div class="case-steps">
+      ${steps.map(s => `
+        <div class="step-row">
+          <div class="step-dot ${s.done ? 'done' : 'pending'}">${s.done ? '✓' : ''}</div>
+          <span class="step-label ${s.done ? 'done' : ''}">${s.label}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderCases(filter) {
+  const list = document.getElementById('casesList');
+  let filtered = [...cases];
+  if (filter === 'pending') filtered = cases.filter(c => c.estado !== 'cerrado');
+  if (filter === 'done')    filtered = cases.filter(c => c.estado === 'cerrado');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="cases-empty">No hay casos registrados aún</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(c => `
+    <div class="case-card">${renderCaseSummary(c)}</div>
+  `).join('');
+}
+
+function filterCases(type, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCases(type === 'all' ? null : type);
+}
+
+// Mapa de labels por grilla — necesario para borrar fotos
+const fotoLabels = {};
+
+// Override buildPhotoGrid para registrar labels
+const _buildOrig = buildPhotoGrid;
+function buildPhotoGrid(containerId, labels) {
+  fotoLabels[containerId] = labels;
+  _buildOrig(containerId, labels);
+}
+
+// Feedback visual en botón al guardar
+function btnGuardando(btnEl, texto) {
+  btnEl.classList.add('btn-saving');
+  btnEl.querySelector('span') 
+    ? btnEl.querySelector('span').textContent = texto
+    : (btnEl.textContent = texto);
+}
+function btnListo(btnEl, textoOriginal) {
+  btnEl.classList.remove('btn-saving');
+  btnEl.querySelector('span')
+    ? btnEl.querySelector('span').textContent = textoOriginal
+    : (btnEl.textContent = textoOriginal);
+}
+</script>
+</body>
+</html>
